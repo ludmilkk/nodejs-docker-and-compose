@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  backend:
+    container_name: kpd-backend
+    build:
+      context: ./backend
+    restart: always
+    ports:
+      - "4000:4000"
+    env_file:
+      - .env
+    depends_on:
+      - database
+    networks:
+      - internal
+
+  frontend:
+    container_name: kpd-frontend
+    build:
+      context: ./frontend
+    restart: always
+    ports:
+      - "8082:80"
+    depends_on:
+      - backend
+    networks:
+      - internal
+
+  database:
+    container_name: kpd-database
+    image: postgres:13
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data/pgdata
+    networks:
+      - internal
+
+volumes:
+  pg_data:
+
+networks:
+  internal:
